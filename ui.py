@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter import ttk
 from passGenrator import pass_gen
 from tkinter import messagebox
 import pyperclip
@@ -13,6 +14,15 @@ class Frontend():
     def __init__(self,window):
         self.window = window
         self.window.title('Password Manager')
+        self.style = ttk.Style()
+        self.style.theme_use('default')
+        self.style.configure(
+            'Custom.TCombobox',
+            fieldbackground=BG_COLOR,
+            background=BG_COLOR,
+            foreground=FG_COLOR
+        )
+
         self.window.config(padx=20,pady=20,bg=BG_COLOR)
         self.setup_ui()
 
@@ -40,10 +50,13 @@ class Frontend():
         self.website_entry = Entry(fg=FG_COLOR,bg=BG_COLOR,font=BUTTON_FONT)
         self.website_entry.grid(row=1,column=1,columnspan=3,sticky='ew',padx=5,pady=5)
 
-        self.email_entry = Entry(fg=FG_COLOR,bg=BG_COLOR,font=BUTTON_FONT)
+        self.email_entry = ttk.Combobox(style='Custom.TCombobox',
+                                        font=BUTTON_FONT,
+                                        state='normal')
         self.email_entry.grid(row=2,column=1,columnspan=2,sticky='ew',padx=5,pady=5)
 
         self.pass_entry = Entry(fg=FG_COLOR,bg=BG_COLOR,font=BUTTON_FONT)
+        self.email_entry['values'] = self.load_emails()
         self.pass_entry.grid(row=3,column=1,sticky='ew',padx=5,pady=5)
 
         self.gen_pass_button = Button(text='Generate Password',
@@ -74,6 +87,7 @@ class Frontend():
             if is_ok:
                 with open(file='./pass/data.txt',mode='a') as f:
                     f.write(f'{website} | {email} | {password}\n')
+                self.email_entry['values'] = self.load_emails()
                 self.website_entry.delete(0,END)
                 self.email_entry.delete(0,END)
     
@@ -84,3 +98,17 @@ class Frontend():
         password = pass_gen()
         pyperclip.copy(password)
         self.pass_entry.insert(0,password)
+
+    def load_emails(self):
+        emails = set()
+
+        try:
+            with open('./pass/data.txt','r') as f:
+                for line in f:
+                    parts = line.strip().split('|')
+                    email = parts[1].strip()
+                    emails.add(email)
+        except FileNotFoundError:
+            pass
+
+        return sorted(list(emails))
