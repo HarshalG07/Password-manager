@@ -1,6 +1,7 @@
 from tkinter import *
 from passGenrator import pass_gen
 from tkinter import messagebox
+import pyperclip
 
 BG_COLOR = '#FFDAB3'
 FONT = ('Albertus Medium',15,'normal')
@@ -81,4 +82,5 @@ class Frontend():
     def generate_pass(self):
         self.pass_entry.delete(0,END)
         password = pass_gen()
+        pyperclip.copy(password)
         self.pass_entry.insert(0,password)
