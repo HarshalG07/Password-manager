@@ -49,7 +49,14 @@ class Frontend():
         self.pass_lbl.grid(row=3,column=0,padx=5,pady=5)
 
         self.website_entry = Entry(fg=FG_COLOR,bg=BG_COLOR,font=BUTTON_FONT)
-        self.website_entry.grid(row=1,column=1,columnspan=3,sticky='ew',padx=5,pady=5)
+        self.website_entry.grid(row=1,column=1,sticky='ew',padx=5,pady=5)
+
+        self.search = Button(text='Search',
+                            fg=FG_COLOR,
+                            bg=BG_COLOR,
+                            font=BUTTON_FONT,
+                            activebackground=BUTTON_PRESS,
+                            command=self.search_emails).grid(row=1,column=2,sticky='ew',padx=5,pady=5)
 
         self.email_entry = ttk.Combobox(style='Custom.TCombobox',
                                         font=BUTTON_FONT,
@@ -126,3 +133,15 @@ class Frontend():
             pass
 
         return sorted(list(emails))
+
+    def search_emails(self):
+        website = self.website_entry.get()
+        with open('./pass/data.json','r') as f:
+            data = json.load(f)
+            website_list = data.keys()
+        if website in website_list:
+            found_email = data[website]['email']
+            found_pass = data[website]['password']
+            messagebox.showinfo(title=f'{website.capitalize()}',message=f'Email: {found_email}\nPassword:{found_pass}')
+        else:
+            messagebox.showinfo(title='Not Found', message=f'No entry named: {website}.')
