@@ -3,6 +3,7 @@ from tkinter import ttk
 from passGenrator import pass_gen
 from tkinter import messagebox
 import pyperclip
+import json
 
 BG_COLOR = '#FFDAB3'
 FONT = ('Albertus Medium',15,'normal')
@@ -33,7 +34,7 @@ class Frontend():
             height=260,
             bg=BG_COLOR,
             highlightthickness=0)
-        self.image = PhotoImage(file='./images/pass_icon.png')
+        self.image = PhotoImage(file='100dayspython\PasswordManager\images\pass_icon.png')
         self.canvas.create_image(200,130,image=self.image)
         self.canvas.grid(row=0,column=1)
 
@@ -77,6 +78,12 @@ class Frontend():
         website = self.website_entry.get()
         email = self.email_entry.get()
         password = self.pass_entry.get()
+        new_data = {
+            website:{
+                'email':email,
+                'password':password
+            }
+        }
 
         if len(website)==0 or len(email)==0 or len(password)==0:
             messagebox.showerror(title='Missing Entry',
@@ -85,13 +92,12 @@ class Frontend():
             is_ok = messagebox.askokcancel(title='Are You Sure?',
                                         message=f'Confirm the details:\nWebsite: {website}\nEmail: {email}\nPassword: {password}')
             if is_ok:
-                with open(file='./pass/data.txt',mode='a') as f:
-                    f.write(f'{website} | {email} | {password}\n')
-                self.email_entry['values'] = self.load_emails()
-                self.website_entry.delete(0,END)
-                self.email_entry.delete(0,END)
-    
-                self.pass_entry.delete(0,END)
+                with open('100dayspython\PasswordManager\pass\data.json','w') as f:
+                    json.dump(new_data,f)
+                    self.email_entry['values'] = self.load_emails()
+                    self.website_entry.delete(0,END)
+                    self.email_entry.delete(0,END)
+                    self.pass_entry.delete(0,END)
 
     def generate_pass(self):
         self.pass_entry.delete(0,END)
