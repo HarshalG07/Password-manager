@@ -34,7 +34,7 @@ class Frontend():
             height=260,
             bg=BG_COLOR,
             highlightthickness=0)
-        self.image = PhotoImage(file='100dayspython\PasswordManager\images\pass_icon.png')
+        self.image = PhotoImage(file='./images/pass_icon.png')
         self.canvas.create_image(200,130,image=self.image)
         self.canvas.grid(row=0,column=1)
 
@@ -93,14 +93,14 @@ class Frontend():
                                         message=f'Confirm the details:\nWebsite: {website}\nEmail: {email}\nPassword: {password}')
             if is_ok:
                 try:
-                    with open('100dayspython\PasswordManager\pass\data.json','r') as f:
+                    with open('./pass/data.json','r') as f:
                         data = json.load(f)
                 except:
-                    with open('100dayspython\PasswordManager\pass\data.json','w') as f:
+                    with open('./pass/data.json','w') as f:
                         json.dump(new_data,f,indent=4)
                 else:
                     data.update(new_data)
-                    with open('100dayspython\PasswordManager\pass\data.json','w') as f:
+                    with open('./pass/data.json','w') as f:
                         json.dump(data,f,indent=4)
                 finally:
                     self.email_entry['values'] = self.load_emails()
@@ -116,12 +116,11 @@ class Frontend():
 
     def load_emails(self):
         emails = set()
-
         try:
-            with open('./pass/data.txt','r') as f:
-                for line in f:
-                    parts = line.strip().split('|')
-                    email = parts[1].strip()
+            with open('./pass/data.json','r') as f:
+                data = json.load(f)
+                for website in data:
+                    email = data[website]['email']
                     emails.add(email)
         except FileNotFoundError:
             pass
