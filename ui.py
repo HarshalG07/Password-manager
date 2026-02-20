@@ -92,8 +92,17 @@ class Frontend():
             is_ok = messagebox.askokcancel(title='Are You Sure?',
                                         message=f'Confirm the details:\nWebsite: {website}\nEmail: {email}\nPassword: {password}')
             if is_ok:
-                with open('100dayspython\PasswordManager\pass\data.json','w') as f:
-                    json.dump(new_data,f)
+                try:
+                    with open('100dayspython\PasswordManager\pass\data.json','r') as f:
+                        data = json.load(f)
+                except:
+                    with open('100dayspython\PasswordManager\pass\data.json','w') as f:
+                        json.dump(new_data,f,indent=4)
+                else:
+                    data.update(new_data)
+                    with open('100dayspython\PasswordManager\pass\data.json','w') as f:
+                        json.dump(data,f,indent=4)
+                finally:
                     self.email_entry['values'] = self.load_emails()
                     self.website_entry.delete(0,END)
                     self.email_entry.delete(0,END)
